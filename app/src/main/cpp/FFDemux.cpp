@@ -1,0 +1,51 @@
+//
+// Created by jason on 19-10-14.
+//
+
+#include "FFDemux.h"
+#include "XLog.h"
+
+extern "C"
+{
+#include <libavformat/avformat.h>
+}
+
+bool FFDemux::Open(const char *url) {
+    XLOGI("Open file %s", url);
+    int re = avformat_open_input(&ic, url, NULL, NULL);
+    if (!re) {
+        char buf[1024] = {0};
+        av_strerror(re, buf, sizeof(buf));
+        XLOGE("FFDemux open %s failed", url);
+        return false;
+    }
+    XLOGI("FFDemus success");
+
+    // 获取文件信息
+    re =avformat_find_stream_info(ic, NULL);
+    if (!re) {
+        char buf[1024] = {0};
+        av_strerror(re, buf, sizeof(buf));
+        XLOGE("FFDemux avformat_find_stream_info %s failed", url);
+        return false;
+    }
+    this->totalMS =  ic->duration/(AV_TIME_BASE)/1000
+    XLOGI("total ms = %d", this->totalMS);//1S中有多少个单位，除以1000换算成毫秒
+    return true;
+}
+
+XData FFDemux::Read() {
+    XData d;
+    return d;
+}
+
+FFDemux::FFDemux() {
+    static bool isFirst = true;
+    if (isFirst) {
+        // 线程不安全
+        isFirst = false;
+        // 初始化网络
+        avformat_network_init();
+        XLOGD("register ffmpeg");
+    }
+}
