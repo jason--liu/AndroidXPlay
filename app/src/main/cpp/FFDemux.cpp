@@ -13,24 +13,25 @@ extern "C"
 bool FFDemux::Open(const char *url) {
     XLOGI("Open file %s", url);
     int re = avformat_open_input(&ic, url, NULL, NULL);
-    if (!re) {
+    if (re != 0) {
         char buf[1024] = {0};
         av_strerror(re, buf, sizeof(buf));
-        XLOGE("FFDemux open %s failed", url);
+        XLOGE("FFDemux open %s failed, error %s!", url, buf);
         return false;
     }
-    XLOGI("FFDemus success");
+    XLOGI("FFDemux success");
 
     // 获取文件信息
-    re =avformat_find_stream_info(ic, NULL);
-    if (!re) {
+    re = avformat_find_stream_info(ic, NULL);
+    if (re != 0) {
         char buf[1024] = {0};
         av_strerror(re, buf, sizeof(buf));
         XLOGE("FFDemux avformat_find_stream_info %s failed", url);
         return false;
     }
-    this->totalMS =  ic->duration/(AV_TIME_BASE)/1000
+    this->totalMS = ic->duration / (AV_TIME_BASE) / 1000;
     XLOGI("total ms = %d", this->totalMS);//1S中有多少个单位，除以1000换算成毫秒
+
     return true;
 }
 
@@ -45,7 +46,7 @@ FFDemux::FFDemux() {
         // 线程不安全
         isFirst = false;
         // 初始化网络
-        avformat_network_init();
+        //avformat_network_init();
         XLOGD("register ffmpeg");
     }
 }
