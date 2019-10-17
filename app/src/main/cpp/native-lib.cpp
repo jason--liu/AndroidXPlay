@@ -2,6 +2,8 @@
 #include <string>
 #include "FFDemux.h"
 #include "XLog.h"
+#include "IDecode.h"
+#include "FFDecode.h"
 
 class TestObs:public IObserver{
 public:
@@ -28,6 +30,8 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     //Just For Test///
     IDemux *de = new FFDemux();
     TestObs *tobs = new TestObs();
+    IDecode *vdecode = new FFDecode();
+    vdecode->Open();
     de->AddObs(tobs);
     de->Open(url);///storage/emulated/0/1.pcm
    /* for(;;){
