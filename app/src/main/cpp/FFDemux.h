@@ -14,7 +14,7 @@ class FFDemux : public IDemux {
 public:
     // 打开文件或者流媒体 rtmp http rtsp
     virtual bool Open(const char *url);
-
+    virtual XParameter GetPara();
     // 读取1帧数据，数据由调用者清理
     virtual XData Read();
     FFDemux();

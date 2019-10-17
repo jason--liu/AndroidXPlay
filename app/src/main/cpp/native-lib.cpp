@@ -5,13 +5,13 @@
 #include "IDecode.h"
 #include "FFDecode.h"
 
-class TestObs:public IObserver{
+class TestObs : public IObserver {
 public:
-    void Update(XData d)
-    {
-        XLOGI("test  obs update size %d",d.size);
+    void Update(XData d) {
+        //XLOGI("test  obs update size %d",d.size);
     }
 };
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_jason_xplay_MainActivity_stringFromJNI(
         JNIEnv *env,
@@ -30,16 +30,17 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     //Just For Test///
     IDemux *de = new FFDemux();
     TestObs *tobs = new TestObs();
-    IDecode *vdecode = new FFDecode();
-    vdecode->Open();
+
     de->AddObs(tobs);
     de->Open(url);///storage/emulated/0/1.pcm
-   /* for(;;){
-        XData d = de->Read();
-        XLOGI("Read data size is %d",d.size);
-    }*/
-   de->Start();
-   XSleep(3000);
-   de->Stop();
+    IDecode *vdecode = new FFDecode();
+    vdecode->Open(de->GetPara());
+    /* for(;;){
+         XData d = de->Read();
+         XLOGI("Read data size is %d",d.size);
+     }*/
+    de->Start();
+    XSleep(3000);
+    de->Stop();
     //env->ReleaseStringUTFChars(url_, url);
 }

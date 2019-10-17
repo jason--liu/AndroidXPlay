@@ -62,3 +62,19 @@ FFDemux::FFDemux() {
         XLOGD("register ffmpeg");
     }
 }
+
+XParameter FFDemux::GetPara() {
+    if (!ic) {
+        XLOGE("ic is null");
+        return XParameter();
+    }
+    // 获取视频流索引
+    int Vindex = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, 0, 0);
+    if (Vindex < 0) {
+        XLOGE("find video stream failed");
+        return XParameter();
+    }
+    XParameter para;
+    para.para = ic->streams[Vindex]->codecpar;
+    return para;
+}
