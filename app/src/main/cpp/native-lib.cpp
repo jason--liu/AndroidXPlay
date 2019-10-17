@@ -26,5 +26,7 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
         XLOGI("Read data size is %d",d.size);
     }*/
    de->Start();
+   XSleep(3000);
+   de->Stop();
     //env->ReleaseStringUTFChars(url_, url);
 }

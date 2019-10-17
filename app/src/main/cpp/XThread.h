@@ -5,7 +5,8 @@
 #ifndef XPLAY_XTHREAD_H
 #define XPLAY_XTHREAD_H
 
-
+//跨平台sleep
+void XSleep(int ms);
 class XThread {
 public:
     virtual void Start();
@@ -15,6 +16,9 @@ public:
 
     }
 
+protected:
+    bool isExit = false;
+    bool isRunning = false;
 private:
     void ThreadMain();
 };

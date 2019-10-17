@@ -6,10 +6,10 @@
 #include "XLog.h"
 
 void IDemux::Main() {
-    for (;;) {
+    while(!isExit) {
         XData d = Read();
-        XLOGD("IDemux Read %d", d.size);
-        if (d.size <= 0)
-            break;
+        //XLOGD("IDemux Read %d", d.size);
+        //if (d.size <= 0)
+         //   break;
     }
 }
