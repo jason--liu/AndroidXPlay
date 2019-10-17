@@ -6,7 +6,9 @@
 #define XPLAY_IDEMUX_H
 
 #include "XData.h"
-class IDemux {
+#include "XThread.h"
+
+class IDemux :public XThread{
 public:
     // 打开文件或者流媒体 rtmp http rtsp
     virtual bool Open(const char *url) = 0;
@@ -14,6 +16,8 @@ public:
     virtual XData Read()=0;
 
     int totalMS = 0;
+protected:
+    virtual void Main();
 };
 
 

@@ -21,9 +21,10 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     //Just For Test///
     IDemux *de = new FFDemux();
     de->Open(url);///storage/emulated/0/1.pcm
-    for(;;){
+   /* for(;;){
         XData d = de->Read();
         XLOGI("Read data size is %d",d.size);
-    }
+    }*/
+   de->Start();
     //env->ReleaseStringUTFChars(url_, url);
 }
