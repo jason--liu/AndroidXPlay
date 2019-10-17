@@ -7,8 +7,9 @@
 
 #include "XData.h"
 #include "XThread.h"
+#include "IObserver.h"
 
-class IDemux :public XThread{
+class IDemux :public IObserver{
 public:
     // 打开文件或者流媒体 rtmp http rtsp
     virtual bool Open(const char *url) = 0;

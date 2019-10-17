@@ -3,6 +3,13 @@
 #include "FFDemux.h"
 #include "XLog.h"
 
+class TestObs:public IObserver{
+public:
+    void Update(XData d)
+    {
+        XLOGI("test  obs update size %d",d.size);
+    }
+};
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_jason_xplay_MainActivity_stringFromJNI(
         JNIEnv *env,
@@ -20,6 +27,8 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     // TODO
     //Just For Test///
     IDemux *de = new FFDemux();
+    TestObs *tobs = new TestObs();
+    de->AddObs(tobs);
     de->Open(url);///storage/emulated/0/1.pcm
    /* for(;;){
         XData d = de->Read();
