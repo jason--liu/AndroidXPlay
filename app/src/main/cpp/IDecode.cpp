@@ -3,3 +3,15 @@
 //
 
 #include "IDecode.h"
+
+void IDecode::Main() {
+
+}
+
+void IDecode::Update(XData pkt) {
+    if (pkt.isAudio != isAudio) {
+        return;;
+    }
+
+
+}

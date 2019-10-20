@@ -31,16 +31,23 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     IDemux *de = new FFDemux();
     TestObs *tobs = new TestObs();
 
-    de->AddObs(tobs);
+    //de->AddObs(tobs);
     de->Open(url);///storage/emulated/0/1.pcm
     IDecode *vdecode = new FFDecode();
-    vdecode->Open(de->GetPara());
+    vdecode->Open(de->GetVPara());
+
+    IDecode *adecode = new FFDecode();
+    vdecode->Open(de->GetAPara());
     /* for(;;){
          XData d = de->Read();
          XLOGI("Read data size is %d",d.size);
      }*/
+    de->AddObs(vdecode);
+    de->AddObs(adecode);
     de->Start();
-    XSleep(3000);
-    de->Stop();
+    vdecode->Start();
+    adecode->Start();
+    //XSleep(3000);
+    //de->Stop();
     //env->ReleaseStringUTFChars(url_, url);
 }

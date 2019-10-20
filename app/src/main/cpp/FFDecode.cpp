@@ -32,6 +32,11 @@ bool FFDecode::Open(XParameter para) {
         return false;
     }
     XLOGI("avcodec open success");
+    if (CodecContext->codec_type == AVMEDIA_TYPE_VIDEO) {
+        this->isAudio = false;
+    } else {
+        this->isAudio = true;
+    }
     return true;
 }
 
@@ -49,6 +54,7 @@ bool FFDecode::SendPacket(XData pkt) {
         XLOGE("%s", buf);
         return false;
     }
+
     return true;
 }
 
