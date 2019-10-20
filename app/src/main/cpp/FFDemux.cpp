@@ -90,7 +90,7 @@ XParameter FFDemux::GetVPara() {
     return para;
 }
 
-virtual XParameter FFDemux::GetAPara() {
+XParameter FFDemux::GetAPara() {
     if (!ic) {
         XLOGE("ic is null");
         return XParameter();

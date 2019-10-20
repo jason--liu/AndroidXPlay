@@ -77,6 +77,10 @@ XData FFDecode::ReceiveFrame() {
     d.data = reinterpret_cast<unsigned char *>(frame);
     if (CodecContext->coder_type == AVMEDIA_TYPE_VIDEO)
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
+    else
+        // 样本字节*单通道样本数*通道数
+        d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
+                 frame->nb_samples * 2;//32位
     return d;
     return XData();
 }

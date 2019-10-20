@@ -16,7 +16,7 @@ public:
     virtual bool Open(XParameter para);
 
     virtual bool SendPacket(XData pkt);
-
+    // 再次调用会复用上次空间，线程不安全
     virtual XData ReceiveFrame();
 
 protected:

@@ -20,14 +20,17 @@ public:
 
     virtual XData ReceiveFrame() = 0;
 
-    // 由主体notify的数据
+    // 由主体notify的数据(阻塞)
     virtual void Update(XData pkt);
 
     bool isAudio = false;
+    int maxList = 100;//缓冲4S左右
 protected:
     virtual void Main();
+
     // 读取缓冲
     std::list<XData> packs;
+    std::mutex packsMutex;
 
 };
 
