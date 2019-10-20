@@ -31,7 +31,8 @@ bool FFDemux::Open(const char *url) {
     }
     this->totalMS = ic->duration / (AV_TIME_BASE) / 1000;
     XLOGI("total ms = %d", this->totalMS);//1S中有多少个单位，除以1000换算成毫秒
-
+    GetVPara();
+    GetAPara();
     return true;
 }
 
@@ -49,6 +50,14 @@ XData FFDemux::Read() {
     d.data = reinterpret_cast<unsigned char *>(pkt);
     //d.data = (unsigned char *)pkt;
     d.size = pkt->size;
+    if (pkt->stream_index == audioStream) {
+        d.isAudio = true;
+    } else if (pkt->stream_index == videoStream) {
+        d.isAudio = false;
+    } else {
+        av_packet_free(&pkt);
+        return XData();
+    }
     return d;
 }
 
@@ -63,7 +72,7 @@ FFDemux::FFDemux() {
     }
 }
 
-XParameter FFDemux::GetPara() {
+XParameter FFDemux::GetVPara() {
     if (!ic) {
         XLOGE("ic is null");
         return XParameter();
@@ -74,7 +83,26 @@ XParameter FFDemux::GetPara() {
         XLOGE("find video stream failed");
         return XParameter();
     }
+    videoStream = Vindex;
     XParameter para;
     para.para = ic->streams[Vindex]->codecpar;
+
+    return para;
+}
+
+virtual XParameter FFDemux::GetAPara() {
+    if (!ic) {
+        XLOGE("ic is null");
+        return XParameter();
+    }
+    // 获取视频流索引
+    int Aindex = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, 0, 0);
+    if (Aindex < 0) {
+        XLOGE("find video stream failed");
+        return XParameter();
+    }
+    audioStream = Aindex;
+    XParameter para;
+    para.para = ic->streams[Aindex]->codecpar;
     return para;
 }
