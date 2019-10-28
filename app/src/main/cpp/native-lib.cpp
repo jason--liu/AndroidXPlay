@@ -5,6 +5,7 @@
 #include "XLog.h"
 #include "IDecode.h"
 #include "FFDecode.h"
+#include "XEGL.h"
 
 class TestObs : public IObserver {
 public:
@@ -56,5 +57,6 @@ JNIEXPORT void JNICALL
 Java_com_jason_xplay_XPlay_InitView(JNIEnv *env, jobject instance, jobject surface) {
 
     ANativeWindow* win =  ANativeWindow_fromSurface(env, surface);
+    XEGL::Get()->Init(win);
 
 }
