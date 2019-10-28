@@ -6,6 +6,7 @@
 #include "IDecode.h"
 #include "FFDecode.h"
 #include "XEGL.h"
+#include "XShader.h"
 
 class TestObs : public IObserver {
 public:
@@ -58,5 +59,7 @@ Java_com_jason_xplay_XPlay_InitView(JNIEnv *env, jobject instance, jobject surfa
 
     ANativeWindow* win =  ANativeWindow_fromSurface(env, surface);
     XEGL::Get()->Init(win);
+    XShader shader;
+    shader.Init();
 
 }
