@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <android/native_window_jni.h>
 #include "FFDemux.h"
 #include "XLog.h"
 #include "IDecode.h"
@@ -50,4 +51,10 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     //XSleep(3000);
     //de->Stop();
     //env->ReleaseStringUTFChars(url_, url);
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_jason_xplay_XPlay_InitView(JNIEnv *env, jobject instance, jobject surface) {
+
+    ANativeWindow* win =  ANativeWindow_fromSurface(env, surface);
+
 }
