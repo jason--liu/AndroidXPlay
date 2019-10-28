@@ -69,18 +69,20 @@ XData FFDecode::ReceiveFrame() {
     if (re != 0) {
         char buf[1024] = {0};
         av_strerror(re, buf, sizeof(buf) - 1);
-        XLOGE("%s", buf);
+        //XLOGE("avcodec_receive_frame %s", buf);
         return XData();
     }
     //解码成功
     XData d;
     d.data = reinterpret_cast<unsigned char *>(frame);
-    if (CodecContext->coder_type == AVMEDIA_TYPE_VIDEO)
+    //XLOGD("codec type %d", CodecContext->codec_type);
+    if (CodecContext->codec_type == AVMEDIA_TYPE_VIDEO) {
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
+        XLOGD("d.size = %d", d.size);
+    }
     else
         // 样本字节*单通道样本数*通道数
         d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
                  frame->nb_samples * 2;//32位
     return d;
-    return XData();
 }

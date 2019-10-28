@@ -18,12 +18,6 @@ void IDecode::Update(XData pkt) {
         }
         XSleep(1);
     }
-    std::lock_guard<std::mutex> lock(packsMutex);
-    // 阻塞
-    if (packs.size() > maxList) {
-
-    }
-    packs.push_back(pkt);
 
 }
 
@@ -44,7 +38,7 @@ void IDecode::Main() {
                 // 获取解码数据
                 XData frame = ReceiveFrame();
                 if (!frame.data) break;
-                XLOGD("RecvFrame %d", frame.size);
+                //XLOGD("RecvFrame %d", frame.size);
                 // 发生数据给观察者
                 this->Notify(frame);
             }
