@@ -69,6 +69,12 @@ public:
         XLOGD("eglMakeCurrent success!");
         return true;
     }
+
+    virtual void Draw() {
+        if (display == EGL_NO_DISPLAY || surface == EGL_NO_SURFACE)
+            return;
+        eglSwapBuffers(display, surface);
+    }
 };
 
 XEGL *XEGL::Get() {

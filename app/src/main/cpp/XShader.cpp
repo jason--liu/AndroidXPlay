@@ -145,3 +145,39 @@ bool XShader::Init() {
     XLOGD("shader init success");
     return true;
 }
+
+void XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf) {
+    if (texts[index] == 0) {
+        //材质如果没有初始化过，初始化
+        glGenTextures(1, &texts[index]);// 一次初始化一个
+        // 设置纹理属性0
+        glBindTexture(GL_TEXTURE_2D, texts[index]);
+        // 缩小、放大的过滤器 因为视频可能拉伸放大
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//这个可以理解为设置渲染方法？
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // 设置纹理格式和大小
+        glTexImage2D(GL_TEXTURE_2D, 0,//细节基本 0默认
+                     GL_LUMINANCE,//gpu内部格式 亮度，灰度图
+                     width, height, //尺寸是2的次方 拉伸到全屏
+                     0,//边框
+                     GL_LUMINANCE,//数据格式，亮度
+                     GL_UNSIGNED_BYTE,// 像素数据类型
+                     NULL // 纹理数据，解码后再设置
+        );
+    }
+
+    glActiveTexture(GL_TEXTURE0 + index);
+    glBindTexture(GL_TEXTURE_2D, texts[index]);
+    //替换纹理内容
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE,/*灰度图*/
+                    GL_UNSIGNED_BYTE/*存储格式*/, buf);
+}
+
+void XShader::Draw() {
+    if (!program)
+        return;
+    // 三维绘制
+    // 这个函数会去读上面设置的顶点坐标信息，因此上面设置成static,
+    // 这样才不会消失
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}

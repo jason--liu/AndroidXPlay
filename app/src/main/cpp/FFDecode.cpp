@@ -77,12 +77,14 @@ XData FFDecode::ReceiveFrame() {
     d.data = reinterpret_cast<unsigned char *>(frame);
     //XLOGD("codec type %d", CodecContext->codec_type);
     if (CodecContext->codec_type == AVMEDIA_TYPE_VIDEO) {
+        d.width = frame->width;
+        d.height = frame->height;
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
         XLOGD("d.size = %d", d.size);
-    }
-    else
+    } else
         // 样本字节*单通道样本数*通道数
         d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
                  frame->nb_samples * 2;//32位
+    memcpy(d.datas, frame->data, sizeof(d.datas));
     return d;
 }
