@@ -9,6 +9,7 @@
 #include "XShader.h"
 #include "IVideoView.h"
 #include "GLVideoView.h"
+#include "FFResample.h"
 
 class TestObs : public IObserver {
 public:
@@ -53,6 +54,10 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
 
     view = new GLVideoView();
     vdecode->AddObs(view);
+
+    IResample *resample = new FFResample();
+    resample->Open(de->GetAPara());
+    adecode->AddObs(resample);
 
     de->Start();
     vdecode->Start();

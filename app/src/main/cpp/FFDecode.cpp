@@ -80,7 +80,7 @@ XData FFDecode::ReceiveFrame() {
         d.width = frame->width;
         d.height = frame->height;
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
-        XLOGD("d.size = %d", d.size);
+        // XLOGD("d.size = %d", d.size);
     } else
         // 样本字节*单通道样本数*通道数
         d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
