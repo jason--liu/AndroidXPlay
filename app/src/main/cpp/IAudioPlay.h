@@ -8,13 +8,20 @@
 
 #include "IObserver.h"
 #include "XParameter.h"
-
+#include <list>
 class IAudioPlay : public IObserver {
 public:
     // 接收重采样后的数据
+    // 缓冲满后阻塞
     virtual void Update(XData data);
 
     virtual bool StartPlay(XParameter out) = 0;
+    // 最大缓冲
+    int maxFrame = 100;
+
+private:
+    std::list<XData> frames;
+    std::mutex framesMux;
 };
 
 
