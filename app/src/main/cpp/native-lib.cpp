@@ -10,6 +10,8 @@
 #include "IVideoView.h"
 #include "GLVideoView.h"
 #include "FFResample.h"
+#include "IAudioPlay.h"
+#include "SLAudioPlay.h"
 
 class TestObs : public IObserver {
 public:
@@ -56,8 +58,12 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     vdecode->AddObs(view);
 
     IResample *resample = new FFResample();
-    resample->Open(de->GetAPara());
+    XParameter outPara=de->GetAPara();//对象直接赋值
+    resample->Open(de->GetAPara(), outPara);
     adecode->AddObs(resample);
+    IAudioPlay *audioPlay = new SLAudioPlay();
+    audioPlay->StartPlay(outPara);
+    resample->AddObs(audioPlay);
 
     de->Start();
     vdecode->Start();

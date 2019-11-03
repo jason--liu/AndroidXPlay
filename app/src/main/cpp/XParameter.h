@@ -10,7 +10,10 @@ struct AVCodecParameters;
 
 class XParameter {
 public:
-    AVCodecParameters *para;
+    AVCodecParameters *para = 0;
+    int channels = 2; // 增加这个变量为了解耦
+    int sample_rate = 441000;
+
 };
 
 

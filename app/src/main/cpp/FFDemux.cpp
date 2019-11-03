@@ -86,7 +86,6 @@ XParameter FFDemux::GetVPara() {
     videoStream = Vindex;
     XParameter para;
     para.para = ic->streams[Vindex]->codecpar;
-
     return para;
 }
 
@@ -104,5 +103,7 @@ XParameter FFDemux::GetAPara() {
     audioStream = Aindex;
     XParameter para;
     para.para = ic->streams[Aindex]->codecpar;
+    para.channels = ic->streams[Aindex]->codecpar->channels;
+    para.sample_rate = ic->streams[Aindex]->codecpar->sample_rate;
     return para;
 }
