@@ -17,6 +17,15 @@ static SLObjectItf playerObject = nullptr;
 static SLPlayItf playerPlay = nullptr;
 SLAndroidSimpleBufferQueueItf playerBufferQueue = nullptr;
 
+SLAudioPlay::SLAudioPlay() {
+    buf = new uint8_t[1024 * 1024];
+}
+
+SLAudioPlay::~SLAudioPlay() {
+    delete buf;
+    buf = nullptr;
+}
+
 static SLEngineItf CreateSL() {
     SLresult result;
     SLEngineItf en;
@@ -41,7 +50,19 @@ void SLAudioPlay::PlayCall(void *bufq) {
     if (!bufq)
         return;
     SLAndroidSimpleBufferQueueItf bf = (SLAndroidSimpleBufferQueueItf) (bufq);
-    XLOGD("SLAudioPlay::PlayCall called");
+    //XLOGD("SLAudioPlay::PlayCall called");
+    //阻塞调用
+    XData d = GetData();
+    if (d.size <= 0) {
+        XLOGE("GetData size error");
+        return;
+    }
+    if (!buf)
+        return;
+
+    memcpy(buf, d.data, d.size);
+    (*bf)->Enqueue(bf, buf, d.size);
+    d.Drop();
     return;
 }
 

@@ -22,7 +22,7 @@ bool FFDecode::Open(XParameter para) {
     // 2.创建解码器上下文
     CodecContext = avcodec_alloc_context3(cd);
     avcodec_parameters_to_context(CodecContext, p);
-    CodecContext->thread_count = 4;
+    CodecContext->thread_count = 8;
     // 3.打开解码器
     int re = avcodec_open2(CodecContext, cd, NULL);
     if (re != 0) {

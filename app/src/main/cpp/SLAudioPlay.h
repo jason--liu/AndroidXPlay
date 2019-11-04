@@ -11,7 +11,13 @@
 class SLAudioPlay : public IAudioPlay {
 public:
     virtual bool StartPlay(XParameter out);
+
     void PlayCall(void *bufq);
+    SLAudioPlay();
+    virtual ~SLAudioPlay();
+
+protected:
+    uint8_t *buf = 0;
 };
 
 
