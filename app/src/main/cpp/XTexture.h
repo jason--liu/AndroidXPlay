@@ -5,10 +5,15 @@
 #ifndef XPLAY_XTEXTURE_H
 #define XPLAY_XTEXTURE_H
 
+enum XTextureType {
+    XTEXTURE_YUV420P = 0,// yyyy u v
+    XTEXTURE_NV12 = 23, // yyyy uv
+    XTEXTURE_NV21 = 24  //yyyy vu
+};
 
 class XTexture {
 public:
-    virtual bool Init(void *win) = 0;
+    virtual bool Init(void *win, XTextureType type = XTEXTURE_YUV420P) = 0;
 
     virtual void Draw(unsigned char *data[], int width, int height) = 0;
 

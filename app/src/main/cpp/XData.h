@@ -18,6 +18,7 @@ struct XData {
     int size = 0;
     bool isAudio = false;
     int type = 0;
+    int format = 0;
 
     bool Alloc(int size, const char *data = 0);
 

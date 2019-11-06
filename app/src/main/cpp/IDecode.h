@@ -13,7 +13,7 @@
 class IDecode : public IObserver {
 public:
     //打开解码器
-    virtual bool Open(XParameter para) = 0;
+    virtual bool Open(XParameter para, bool isHard = false) = 0;
 
     // 发生数据到线程解码（立即返回）
     virtual bool SendPacket(XData pkt) = 0;

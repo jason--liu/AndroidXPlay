@@ -10,7 +10,7 @@ extern "C" {
 
 void XData::Drop() {
     if (!data) return;
-    if (type = AVPACKET_TYPE)
+    if (type == AVPACKET_TYPE)
         av_packet_free((AVPacket **) &data);
     else
         delete data;

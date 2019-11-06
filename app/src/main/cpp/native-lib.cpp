@@ -31,6 +31,11 @@ Java_com_jason_xplay_MainActivity_stringFromJNI(
     return env->NewStringUTF(hello.c_str());
 }
 extern "C"
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *res) {
+    FFDecode::InitHard(vm);
+    return JNI_VERSION_1_4;
+}
+extern "C"
 JNIEXPORT void JNICALL
 Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstring url_) {
     const char *url = env->GetStringUTFChars(url_, 0);
@@ -43,7 +48,7 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     //de->AddObs(tobs);
     de->Open(url);///storage/emulated/0/1.pcm
     IDecode *vdecode = new FFDecode();
-    vdecode->Open(de->GetVPara());
+    vdecode->Open(de->GetVPara(), true);//打开硬解码
 
     IDecode *adecode = new FFDecode();
     adecode->Open(de->GetAPara());
@@ -58,7 +63,7 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
     vdecode->AddObs(view);
 
     IResample *resample = new FFResample();
-    XParameter outPara=de->GetAPara();//对象直接赋值
+    XParameter outPara = de->GetAPara();//对象直接赋值
     resample->Open(de->GetAPara(), outPara);
     adecode->AddObs(resample);
     IAudioPlay *audioPlay = new SLAudioPlay();
@@ -75,7 +80,7 @@ Java_com_jason_xplay_MainActivity_testXplay(JNIEnv *env, jobject instance, jstri
 JNIEXPORT void JNICALL
 Java_com_jason_xplay_XPlay_InitView(JNIEnv *env, jobject instance, jobject surface) {
 
-    ANativeWindow* win =  ANativeWindow_fromSurface(env, surface);
+    ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
     //XEGL::Get()->Init(win);
     //XShader shader;
     //shader.Init();

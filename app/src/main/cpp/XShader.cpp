@@ -48,11 +48,59 @@ static const char *fragYUV420p = GET_STR(
         }
 );
 
+static const char *fragNV12 = GET_STR(
+        precision
+        mediump float;//精度
+        varying
+        vec2 vTexCoord;//顶点着色器传递的坐标
+        // 三个输入参数，输入材质（灰度材质，单像素）
+        uniform
+        sampler2D yTexture;
+        uniform
+        sampler2D uvTexture;
+        void main() {
+            vec3 yuv;
+            vec3 rgb;
+            yuv.r = texture2D(yTexture, vTexCoord).r;
+            yuv.g = texture2D(uvTexture, vTexCoord).r - 0.5;
+            yuv.b = texture2D(uvTexture, vTexCoord).a - 0.5;
+            rgb = mat3(1.0, 1.0, 1.0,
+                       0.0, -0.39465, 2.03211,
+                       1.13983, -0.58060, 0.0) * yuv;
+            //输出像素颜色
+            gl_FragColor = vec4(rgb, 1.0);
+        }
+);
+
+static const char *fragNV21 = GET_STR(
+        precision
+        mediump float;//精度
+        varying
+        vec2 vTexCoord;//顶点着色器传递的坐标
+        // 三个输入参数，输入材质（灰度材质，单像素）
+        uniform
+        sampler2D yTexture;
+        uniform
+        sampler2D uvTexture;
+        void main() {
+            vec3 yuv;
+            vec3 rgb;
+            yuv.r = texture2D(yTexture, vTexCoord).r;
+            yuv.g = texture2D(uvTexture, vTexCoord).a - 0.5;
+            yuv.b = texture2D(uvTexture, vTexCoord).r - 0.5;
+            rgb = mat3(1.0, 1.0, 1.0,
+                       0.0, -0.39465, 2.03211,
+                       1.13983, -0.58060, 0.0) * yuv;
+            //输出像素颜色
+            gl_FragColor = vec4(rgb, 1.0);
+        }
+);
+
 static GLuint InitShader(const char *code, GLint type) {
     // 创建shader
     GLuint sh = glCreateShader(type);
     if (!sh) {
-        XLOGE("glCreateShader faild", type);
+        XLOGE("glCreateShader faild %d", type);
         return 0;
     }
     // 加载shader
@@ -72,7 +120,7 @@ static GLuint InitShader(const char *code, GLint type) {
     return sh;
 }
 
-bool XShader::Init() {
+bool XShader::Init(XShaderType type) {
     // shader初始化
     // 顶点shader初始化
     vsh = InitShader(vertexShader, GL_VERTEX_SHADER);
@@ -82,7 +130,21 @@ bool XShader::Init() {
     }
     XLOGD("InitShader vertexShader success!");
     // 片元yuv420p shader初始化
-    fsh = InitShader(fragYUV420p, GL_FRAGMENT_SHADER);
+    switch (type) {
+        case XSHADER_YUV420P:
+            fsh = InitShader(fragYUV420p, GL_FRAGMENT_SHADER);
+            break;
+        case XSHADER_NV12:
+            fsh = InitShader(fragNV12, GL_FRAGMENT_SHADER);
+            break;
+        case XSHADER_NV21:
+            fsh = InitShader(fragNV21, GL_FRAGMENT_SHADER);
+            break;
+        default:
+            XLOGE("xshader format error");
+            return false;
+    }
+
     if (!fsh) {
         XLOGE("InitShader fragYUV420p failed");
         return false;
@@ -139,14 +201,25 @@ bool XShader::Init() {
     // 材质纹理初始化
     // 设置纹理层 将shader和yuv材质绑定？
     glUniform1i(glGetUniformLocation(program, "yTexture"), 0); //对应材质第一层
-    glUniform1i(glGetUniformLocation(program, "uTexture"), 1); //对应材质第二层
-    glUniform1i(glGetUniformLocation(program, "vTexture"), 2); //对应材质第三层
+    switch (type) {
+        case XSHADER_YUV420P:
+            glUniform1i(glGetUniformLocation(program, "uTexture"), 1); //对应材质第二层
+            glUniform1i(glGetUniformLocation(program, "vTexture"), 2); //对应材质第三层
+            break;
+        case XSHADER_NV12:
+        case XSHADER_NV21:
+            glUniform1i(glGetUniformLocation(program, "uvTexture"), 1);//对应材质第二层
+    }
+
 
     XLOGD("shader init success");
     return true;
 }
 
-void XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf) {
+void XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf, bool isa) {
+    unsigned int format = GL_LUMINANCE;
+    if (isa)
+        format = GL_LUMINANCE_ALPHA;
     if (texts[index] == 0) {
         //材质如果没有初始化过，初始化
         glGenTextures(1, &texts[index]);// 一次初始化一个
@@ -157,10 +230,10 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // 设置纹理格式和大小
         glTexImage2D(GL_TEXTURE_2D, 0,//细节基本 0默认
-                     GL_LUMINANCE,//gpu内部格式 亮度，灰度图
+                     format,//gpu内部格式 亮度，灰度图
                      width, height, //尺寸是2的次方 拉伸到全屏
                      0,//边框
-                     GL_LUMINANCE,//数据格式，亮度
+                     format,//数据格式，亮度
                      GL_UNSIGNED_BYTE,// 像素数据类型
                      NULL // 纹理数据，解码后再设置
         );
@@ -169,7 +242,7 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, texts[index]);
     //替换纹理内容
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE,/*灰度图*/
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, format,/*灰度图*/
                     GL_UNSIGNED_BYTE/*存储格式*/, buf);
 }
 

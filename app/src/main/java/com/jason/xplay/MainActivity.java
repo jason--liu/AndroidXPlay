@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.io.File;
@@ -45,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //去掉标题栏
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        //全屏，隐藏状态栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
 
